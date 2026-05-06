@@ -1,0 +1,80 @@
+{% extends 'base.html' %}{% block title %}Session Details{% endblock %}
+{% block content %}
+<div style="max-width:740px;margin:2.5rem auto;padding:0 2rem">
+  <div class="ph">
+    <h1>Session Details</h1>
+    <a href="javascript:history.back()" style="color:var(--sage-dark);font-size:.88rem">← Back</a>
+  </div>
+
+  <div class="sblock">
+    <h3>📋 Appointment Info</h3>
+    <div class="info-grid">
+      <div><strong>Counsellor</strong>Dr. {{ apt.counsellor_name }}</div>
+      <div><strong>Specialization</strong>{{ apt.specialization }}</div>
+      <div><strong>Date</strong>{{ apt.apt_date }}</div>
+      <div><strong>Time</strong>{{ apt.apt_time }}</div>
+      <div><strong>Mode</strong>{{ apt.mode|capfirst }}</div>
+      <div><strong>Status</strong>
+        <span class="badge {% if apt.status == 'completed' %}badge-b{% elif apt.status == 'cancelled' %}badge-r{% else %}badge-g{% endif %}">{{ apt.status|capfirst }}</span>
+      </div>
+    </div>
+    {% if apt.reason %}<div style="margin-top:1rem;font-size:.88rem"><strong>Reason:</strong> {{ apt.reason }}</div>{% endif %}
+  </div>
+
+  {% if apt.session_id %}
+  <div class="sblock">
+    <h3>🩺 Session Record</h3>
+    <div class="info-grid">
+      <div><strong>Duration</strong>{{ apt.duration_min }} minutes</div>
+      <div><strong>Session Date</strong>{{ apt.session_date|default:apt.apt_date }}</div>
+      {% if apt.diagnosis_name %}<div><strong>Diagnosis</strong><span class="badge badge-b">{{ apt.diagnosis_name }}</span></div>{% endif %}
+      {% if apt.severity %}<div><strong>Severity</strong><span class="badge badge-y">{{ apt.severity|capfirst }}</span></div>{% endif %}
+      {% if apt.follow_up_needed %}<div><strong>Follow-up</strong><span class="badge badge-r">Recommended</span></div>{% endif %}
+    </div>
+    {% if request.session.role == 'counsellor' and apt.notes %}
+    <div style="margin-top:1rem">
+      <strong style="font-size:.82rem;color:var(--muted)">SESSION NOTES</strong>
+      <div style="margin-top:.4rem;padding:1rem;background:var(--cream);border-radius:10px;font-size:.88rem;line-height:1.8">{{ apt.notes }}</div>
+    </div>{% endif %}
+  </div>
+
+  {% if request.session.role == 'student' %}
+  <div class="sblock">
+    <h3>💬 Your Feedback</h3>
+    {% if apt.student_feedback %}
+      <p style="font-size:.9rem;margin-bottom:.8rem">{{ apt.student_feedback }}</p>
+      {% if apt.student_rating %}<div class="stars-display" style="font-size:1.5rem">{% for i in "12345" %}{% if forloop.counter <= apt.student_rating %}★{% else %}☆{% endif %}{% endfor %}</div>{% endif %}
+    {% else %}
+    <form method="post">{% csrf_token %}
+      <div class="fg"><label>Share your experience</label>
+        <textarea name="feedback" rows="3" placeholder="How was the session? What was most helpful?"></textarea></div>
+      <div class="fg">
+        <label>Your Rating</label>
+        <div class="stars-input">
+          {% for i in "54321" %}<label>{{ i }}<input type="radio" name="rating" value="{{ i }}"></label>{% endfor %}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-p">Submit Feedback ✓</button>
+    </form>
+    {% endif %}
+  </div>{% endif %}
+  {% else %}
+  <div class="empty"><div class="ico">⏳</div><h3>Session not yet completed</h3><p>Session details appear after the counsellor marks the session complete.</p></div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+// Reverse star rating (CSS trick alternative)
+const stars = document.querySelectorAll('.stars-input label');
+stars.forEach((s,i) => {
+  s.addEventListener('click', () => {
+    stars.forEach((x,j) => x.style.color = j >= i ? '#f59e0b' : 'var(--sand)');
+    s.querySelector('input').checked = true;
+  });
+  s.addEventListener('mouseover', () => stars.forEach((x,j) => x.style.color = j >= i ? '#f59e0b' : 'var(--sand)'));
+  s.addEventListener('mouseout', () => stars.forEach(x => x.style.color = 'var(--sand)'));
+});
+</script>
+{% endblock %}

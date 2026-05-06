@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block title %}Login{% endblock %}
+{% block content %}
+<div style="min-height:82vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(135deg,var(--cream),var(--warm))">
+<div class="form-wrap fu" style="width:100%">
+  <div style="text-align:center;font-size:2.5rem;margin-bottom:1rem">🌿</div>
+  <h2>Welcome back</h2><p class="sub">Sign in to your MindBridge account</p>
+  <form method="post">{% csrf_token %}
+    <div class="fg"><label>I am a…</label>
+      <select name="role">
+        <option value="student">🎓 Student</option>
+        <option value="counsellor">🩺 Counsellor</option>
+      </select></div>
+    <div class="fg"><label>Email</label><input type="email" name="email" placeholder="you@campus.edu" required></div>
+    <div class="fg"><label>Password</label><input type="password" name="password" placeholder="••••••••" required></div>
+    <button type="submit" class="btn btn-p btn-full">Sign In →</button>
+  </form>
+  <div class="form-footer" style="margin-top:1rem">No account? <a href="/register/">Register as student</a></div>
+  <div style="margin-top:1.5rem;padding:1rem;background:var(--cream);border-radius:10px;font-size:.8rem;color:var(--muted)">
+    <strong>Demo accounts (password: password)</strong><br>
+    Students: arjun@student.edu · meera@student.edu · rohan@student.edu<br>
+    Counsellors: priya@campus.edu · rahul@campus.edu · ananya@campus.edu
+  </div>
+</div></div>
+{% endblock %}

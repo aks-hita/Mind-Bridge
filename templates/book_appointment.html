@@ -1,0 +1,27 @@
+{% extends 'base.html' %}{% block title %}Book Appointment{% endblock %}
+{% block content %}
+<div style="min-height:82vh;display:flex;align-items:center;justify-content:center;padding:3rem 2rem;background:linear-gradient(135deg,var(--cream),var(--warm))">
+<div class="form-wrap fu" style="max-width:600px;width:100%">
+  <div style="text-align:center;font-size:2.5rem;margin-bottom:1rem">📅</div>
+  <h2>Book a Session</h2><p class="sub">Choose your counsellor and preferred time</p>
+  <form method="post">{% csrf_token %}
+    <div class="fg"><label>Choose Counsellor *</label>
+      <select name="counsellor_id" required>
+        <option value="">-- Select a Counsellor --</option>
+        {% for c in counsellors %}
+        <option value="{{ c.counsellor_id }}">Dr. {{ c.full_name }} — {{ c.specialization }} ({{ c.experience_years }}y){% if c.avg_rating %} ★{{ c.avg_rating }}{% endif %}</option>
+        {% endfor %}
+      </select></div>
+    <div class="grid-2">
+      <div class="fg"><label>Date *</label><input type="date" name="apt_date" required></div>
+      <div class="fg"><label>Time *</label><input type="time" name="apt_time" required></div>
+    </div>
+    <div class="fg"><label>Session Mode</label>
+      <select name="mode"><option value="online">🌐 Online (Video Call)</option><option value="offline">🏥 In-Person</option></select></div>
+    <div class="fg"><label>Reason for Booking (optional)</label>
+      <textarea name="reason" rows="3" placeholder="Brief description of what you'd like to discuss..."></textarea></div>
+    <button type="submit" class="btn btn-p btn-full">Confirm Booking →</button>
+  </form>
+  <div class="form-footer" style="margin-top:1rem"><a href="/dashboard/">← Back to Dashboard</a></div>
+</div></div>
+{% endblock %}

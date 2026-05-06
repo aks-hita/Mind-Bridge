@@ -1,0 +1,78 @@
+{% extends 'base.html' %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="dash-layout">
+<aside class="sidebar">
+  <div class="sb-user" style="margin-bottom:1.5rem">
+    <div style="width:50px;height:50px;border-radius:50%;background:rgba(122,158,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:.6rem">{{ user_name|first }}</div>
+    <div class="name">{{ user_name }}</div>
+    <div class="role">🎓 Student</div>
+  </div>
+  <nav class="sb-nav">
+    <a href="/dashboard/" class="active">📊 Dashboard</a>
+    <a href="/recommendations/">💡 My Recommendations</a>
+    <a href="/book/">➕ Book Appointment</a>
+    <a href="/counsellors/">🔍 Find Counsellors</a>
+  </nav>
+  {% if unread_count %}<div style="margin-top:1.5rem;padding:.8rem 1rem;background:rgba(194,92,58,.08);border-radius:10px;font-size:.82rem;color:var(--rust)">🔔 {{ unread_count }} unread notification{{ unread_count|pluralize }}</div>{% endif %}
+  {% if notifications %}
+  <div style="margin-top:1rem">
+    {% for n in notifications|slice:":5" %}
+    <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+      {{ n.message }}<div class="notif-time">{{ n.created_at }}</div>
+    </div>{% endfor %}
+  </div>{% endif %}
+</aside>
+<main class="main">
+  <div class="ph"><h1>Good day, {{ user_name }} 🌿</h1><p>Your wellness dashboard</p></div>
+
+  <div class="stats-row">
+    <div class="sbox"><div class="num">{{ stats.upcoming_count }}</div><div class="lbl">Upcoming Sessions</div></div>
+    <div class="sbox"><div class="num">{{ stats.total_sessions }}</div><div class="lbl">Completed Sessions</div></div>
+    <div class="sbox"><div class="num">{{ stats.total_minutes|floatformat:0 }}m</div><div class="lbl">Total Therapy Time</div></div>
+    <div class="sbox"><div class="num">{{ stats.cancelled_count }}</div><div class="lbl">Cancelled</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="t-upcoming" data-group="main">📅 Upcoming ({{ stats.upcoming_count }})</button>
+    <button class="tab" data-tab="t-history" data-group="main">✅ History ({{ stats.total_sessions }})</button>
+  </div>
+
+  <div id="t-upcoming" class="tab-pane active" data-group="main">
+    {% if upcoming %}<div class="apt-list">{% for a in upcoming %}
+    <div class="apt-card">
+      <div class="apt-info">
+        <h4>Session with Dr. {{ a.counsellor_name }}</h4>
+        <div class="apt-meta">
+          <span>📅 {{ a.apt_date }}</span><span>🕐 {{ a.apt_time }}</span>
+          <span>{{ a.mode|capfirst }}</span>
+          {% if a.reason %}<span>📝 {{ a.reason|truncatechars:40 }}</span>{% endif %}
+          <span class="badge badge-g">Booked</span>
+        </div>
+        <div style="color:var(--muted);font-size:.8rem;margin-top:.3rem">{{ a.specialization }}</div>
+      </div>
+      <div class="apt-actions">
+        <a href="/appointment/{{ a.appointment_id }}/" class="btn btn-o btn-sm">View</a>
+        <a href="/appointment/{{ a.appointment_id }}/cancel/" class="btn btn-r btn-sm" onclick="return confirm('Cancel this appointment?')">Cancel</a>
+      </div>
+    </div>{% endfor %}</div>
+    {% else %}<div class="empty"><div class="ico">📅</div><h3>No upcoming appointments</h3><p>Book a session to get started.</p><a href="/book/" class="btn btn-p" style="margin-top:1rem">Book Now</a></div>{% endif %}
+  </div>
+
+  <div id="t-history" class="tab-pane" data-group="main">
+    {% if history %}<div class="apt-list">{% for a in history %}
+    <div class="apt-card">
+      <div class="apt-info">
+        <h4>Session with Dr. {{ a.counsellor_name }}</h4>
+        <div class="apt-meta">
+          <span>📅 {{ a.apt_date }}</span><span>⏱ {{ a.duration_min }}min</span>
+          {% if a.diagnosis_name %}<span class="badge badge-b">{{ a.diagnosis_name }}</span>{% endif %}
+          {% if a.severity %}<span class="badge badge-y">{{ a.severity|capfirst }}</span>{% endif %}
+          {% if a.student_rating %}<span class="stars-display">{% for i in "12345" %}{% if forloop.counter <= a.student_rating %}★{% else %}☆{% endif %}{% endfor %}</span>{% endif %}
+        </div>
+      </div>
+      <div class="apt-actions"><a href="/appointment/{{ a.appointment_id }}/" class="btn btn-o btn-sm">Details</a></div>
+    </div>{% endfor %}</div>
+    {% else %}<div class="empty"><div class="ico">📖</div><h3>No completed sessions yet</h3><p>Your history will appear here after sessions are completed.</p></div>{% endif %}
+  </div>
+</main></div>
+{% endblock %}

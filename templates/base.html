@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{% block title %}MindBridge{% endblock %} — Campus Mental Wellness</title>
+<link rel="stylesheet" href="/static/css/style.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">🌿 Mind<span>Bridge</span></a>
+  <div class="nav-links">
+    <a href="/counsellors/">Counsellors</a>
+    {% if request.session.role == 'student' %}
+      <a href="/dashboard/">Dashboard</a>
+      <a href="/recommendations/">💡 My Recs</a>
+      <a href="/book/" class="btn btn-p btn-sm">Book Session</a>
+      <a href="/logout/" class="btn btn-o btn-sm">Sign out</a>
+    {% elif request.session.role == 'counsellor' %}
+      <a href="/counsellor/dashboard/">My Sessions</a>
+      <a href="/logout/" class="btn btn-o btn-sm">Sign out</a>
+    {% else %}
+      <a href="/login/">Login</a>
+      <a href="/register/" class="btn btn-p btn-sm">Get Started</a>
+    {% endif %}
+  </div>
+</nav>
+
+{% if messages %}
+<div style="padding:.8rem 2.5rem;max-width:1200px;margin:0 auto">
+  {% for m in messages %}
+  <div class="alert {% if m.tags == 'success' %}alert-s{% else %}alert-e{% endif %}">
+    {% if m.tags == 'success' %}✅{% else %}⚠️{% endif %} {{ m }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer style="background:var(--cream);border-top:1px solid var(--sand);padding:1.8rem 2.5rem;display:flex;justify-content:space-between;align-items:center;font-size:.83rem;color:var(--muted);margin-top:4rem">
+  <span>🌿 MindBridge Campus — Mental Wellness Platform</span>
+  <span>Powered by pure SQL &amp; PL</span>
+</footer>
+
+<script>
+// Tab switcher
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',function(){
+  const grp=this.dataset.group||'default';
+  document.querySelectorAll(`.tab[data-group="${grp}"]`).forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll(`.tab-pane[data-group="${grp}"]`).forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+  const el=document.getElementById(this.dataset.tab);
+  if(el)el.classList.add('active');
+}));
+</script>
+{% block js %}{% endblock %}
+</body>
+</html>

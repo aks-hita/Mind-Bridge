@@ -1,0 +1,28 @@
+{% extends 'base.html' %}{% block title %}Register{% endblock %}
+{% block content %}
+<div style="min-height:82vh;display:flex;align-items:center;justify-content:center;padding:3rem 2rem;background:linear-gradient(135deg,var(--cream),var(--warm))">
+<div class="form-wrap fu" style="max-width:620px;width:100%">
+  <div style="text-align:center;font-size:2.5rem;margin-bottom:1rem">🌱</div>
+  <h2>Create your account</h2><p class="sub">Join MindBridge and start your wellness journey</p>
+  <form method="post">{% csrf_token %}
+    <div class="grid-2">
+      <div class="fg"><label>Full Name *</label><input type="text" name="full_name" required placeholder="Arjun Singh"></div>
+      <div class="fg"><label>Email *</label><input type="email" name="email" required placeholder="arjun@student.edu"></div>
+    </div>
+    <div class="grid-2">
+      <div class="fg"><label>Phone</label><input type="text" name="phone" placeholder="+91 98765 43210"></div>
+      <div class="fg"><label>Gender</label>
+        <select name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+    </div>
+    <div class="grid-2">
+      <div class="fg"><label>Date of Birth</label><input type="date" name="dob"></div>
+      <div class="fg"><label>Department</label><input type="text" name="department" placeholder="Computer Science"></div>
+    </div>
+    <div class="fg"><label>Year of Study</label>
+      <select name="year_of_study"><option value="">Select year</option>{% for y in "123456" %}<option>{{ y }}</option>{% endfor %}</select></div>
+    <div class="fg"><label>Password *</label><input type="password" name="password" placeholder="Min. 6 characters" required></div>
+    <button type="submit" class="btn btn-p btn-full">Create Account →</button>
+  </form>
+  <div class="form-footer" style="margin-top:1rem">Already have an account? <a href="/login/">Sign in</a></div>
+</div></div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="fu">
+    <div class="hero-badge">🎓 Campus Mental Health Platform</div>
+    <h1>Your mind matters.<br><em>We're here for it.</em></h1>
+    <p class="hero-sub">Book sessions with certified counsellors. Get personalised recovery recommendations. Track your wellness journey — all in one place.</p>
+    <div class="hero-ctas">
+      <a href="/register/" class="btn btn-p">Start Your Journey →</a>
+      <a href="/counsellors/" class="btn btn-o">Meet Our Counsellors</a>
+    </div>
+  </div>
+  <div class="hero-visual fu d2">
+    <div class="stat-row">
+      <div class="stat-mini"><h3>{{ counsellors|length }}+</h3><p>Expert Counsellors</p></div>
+      <div class="stat-mini"><h3>8</h3><p>Wellness Categories</p></div>
+    </div>
+    <div class="card" style="display:flex;gap:1rem;align-items:center">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(122,158,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🧠</div>
+      <div>
+        <div style="font-family:'Fraunces',serif">Personalised Recommendations</div>
+        <div style="color:var(--muted);font-size:.82rem">Based on your counsellor's diagnosis</div>
+      </div>
+    </div>
+    <div class="card" style="background:var(--sage-dark);color:#fff">
+      <p style="font-size:.78rem;opacity:.7;margin-bottom:.3rem">Built entirely on</p>
+      <div style="font-family:'Fraunces',serif;font-size:1.3rem">Pure SQL &amp; PL</div>
+      <p style="font-size:.78rem;opacity:.7;margin-top:.3rem">Stored Procedures · Triggers · View Queries</p>
+    </div>
+  </div>
+</section>
+
+{% if counsellors %}
+<section class="section">
+  <div class="sec-header"><h2>Our Counsellors</h2><p>Certified professionals ready to support you</p></div>
+  <div class="grid-3">
+  {% for c in counsellors %}
+  <div class="card" style="text-align:center">
+    <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(122,158,126,.25),rgba(122,158,126,.1));display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem">{{ c.full_name|first }}</div>
+    <h3 style="font-size:1.15rem;margin-bottom:.3rem">Dr. {{ c.full_name }}</h3>
+    <div style="color:var(--sage-dark);font-size:.85rem;font-weight:500;margin-bottom:.5rem">{{ c.specialization }}</div>
+    <div style="color:var(--muted);font-size:.8rem;margin-bottom:.3rem">{{ c.experience_years }} yrs experience</div>
+    {% if c.avg_rating %}<div style="color:#f59e0b;font-size:.85rem">★ {{ c.avg_rating }} ({{ c.sessions_done }} sessions)</div>{% endif %}
+    <div style="margin-top:1rem"><a href="/book/" class="btn btn-p btn-sm">Book Session</a></div>
+  </div>
+  {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="section section-alt">
+  <div class="sec-header"><h2>How MindBridge works</h2></div>
+  <div class="grid-3">
+    <div class="card" style="text-align:center"><div style="font-size:2.5rem;margin-bottom:1rem">📋</div><h3 style="margin-bottom:.5rem">Register</h3><p style="color:var(--muted);font-size:.88rem">Create your student account in under a minute.</p></div>
+    <div class="card" style="text-align:center"><div style="font-size:2.5rem;margin-bottom:1rem">📅</div><h3 style="margin-bottom:.5rem">Book a Session</h3><p style="color:var(--muted);font-size:.88rem">Choose a counsellor, pick a time, attend online or in-person.</p></div>
+    <div class="card" style="text-align:center"><div style="font-size:2.5rem;margin-bottom:1rem">💡</div><h3 style="margin-bottom:.5rem">Get Recommendations</h3><p style="color:var(--muted);font-size:.88rem">After your session, receive personalised tips based on your diagnosis.</p></div>
+  </div>
+</section>
+{% endblock %}

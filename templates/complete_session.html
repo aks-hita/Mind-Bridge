@@ -1,0 +1,36 @@
+{% extends 'base.html' %}{% block title %}Complete Session{% endblock %}
+{% block content %}
+<div style="min-height:82vh;display:flex;align-items:center;justify-content:center;padding:3rem 2rem">
+<div class="form-wrap fu" style="max-width:600px;width:100%">
+  <div style="text-align:center;font-size:2.5rem;margin-bottom:1rem">✅</div>
+  <h2>Complete Session</h2>
+  <p class="sub">Record notes &amp; diagnosis for {{ apt.student_name }}</p>
+  <div style="background:var(--cream);border-radius:10px;padding:1rem;margin-bottom:1.5rem;font-size:.88rem">
+    <strong>{{ apt.apt_date }}</strong> at {{ apt.apt_time }} · {{ apt.mode|capfirst }}
+    {% if apt.reason %} · "{{ apt.reason }}"{% endif %}
+  </div>
+  <form method="post">{% csrf_token %}
+    <div class="fg"><label>Session Notes (private, only you see these)</label>
+      <textarea name="notes" rows="5" placeholder="Progress, observations, coping strategies discussed..."></textarea></div>
+    <div class="grid-2">
+      <div class="fg"><label>Duration (minutes)</label><input type="number" name="duration" value="60" min="15" max="180"></div>
+      <div class="fg"><label>Severity</label>
+        <select name="severity"><option value="">Not assessed</option><option value="mild">Mild</option><option value="moderate">Moderate</option><option value="severe">Severe</option></select></div>
+    </div>
+    <div class="fg"><label>Diagnosis Category</label>
+      <select name="diagnosis_category">
+        <option value="">-- Select category (triggers recommendations) --</option>
+        {% for cat in categories %}<option value="{{ cat.category_id }}">{{ cat.name }} — {{ cat.description }}</option>{% endfor %}
+      </select>
+      <small style="color:var(--muted);font-size:.78rem;display:block;margin-top:.3rem">⚡ Selecting a category auto-generates personalised recommendations for this student.</small>
+    </div>
+    <div class="fg">
+      <label style="display:flex;align-items:center;gap:.7rem;cursor:pointer">
+        <input type="checkbox" name="follow_up_needed" value="1" style="width:auto">
+        <span>Recommend follow-up session in ~1 week</span>
+      </label></div>
+    <button type="submit" class="btn btn-p btn-full">Mark as Complete ✓</button>
+  </form>
+  <div class="form-footer" style="margin-top:1rem"><a href="/counsellor/dashboard/">← Back to Dashboard</a></div>
+</div></div>
+{% endblock %}

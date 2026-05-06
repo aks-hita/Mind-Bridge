@@ -1,0 +1,87 @@
+{% extends 'base.html' %}{% block title %}My Recommendations{% endblock %}
+{% block content %}
+<div class="dash-layout">
+<aside class="sidebar">
+  <div class="sb-user" style="margin-bottom:1.5rem">
+    <div style="width:50px;height:50px;border-radius:50%;background:rgba(122,158,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:.6rem">{{ user_name|first }}</div>
+    <div class="name">{{ user_name }}</div><div class="role">🎓 Student</div>
+  </div>
+  <nav class="sb-nav">
+    <a href="/dashboard/">📊 Dashboard</a>
+    <a href="/recommendations/" class="active">💡 My Recommendations</a>
+    <a href="/book/">➕ Book Appointment</a>
+  </nav>
+  {% if categories %}
+  <div style="margin-top:1.5rem">
+    <div style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.8rem">Your Categories</div>
+    {% for cat in categories %}<span class="cat-pill">{{ cat.name }}</span>{% endfor %}
+  </div>{% endif %}
+</aside>
+<main class="main">
+  <div class="ph">
+    <h1>💡 Your Recommendations</h1>
+    <p>Personalised tips based on your counsellor's diagnosis — ranked by priority</p>
+  </div>
+
+  {% if recommendations %}
+    {% if categories %}
+    <div style="margin-bottom:2rem">
+      <div style="font-size:.82rem;font-weight:500;color:var(--muted);margin-bottom:.6rem">Your diagnosed areas:</div>
+      {% for cat in categories %}<span class="cat-pill">{{ cat.name }} — {{ cat.description }}</span>{% endfor %}
+    </div>{% endif %}
+
+    <div style="margin-bottom:1.5rem">
+      <div class="tabs">
+        <button class="tab active" data-tab="rec-all" data-group="rec">All ({{ recommendations|length }})</button>
+        <button class="tab" data-tab="rec-high" data-group="rec">🔴 High Priority</button>
+        <button class="tab" data-tab="rec-med" data-group="rec">🟡 Medium Priority</button>
+      </div>
+    </div>
+
+    <div id="rec-all" class="tab-pane active" data-group="rec">
+      {% for r in recommendations %}
+      <div class="rec-card" style="border-left-color:{% if r.priority == 1 %}var(--rust){% elif r.priority == 2 %}#f59e0b{% else %}var(--sage-dark){% endif %}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
+          <h4>{{ r.title }}</h4>
+          <span class="badge {% if r.priority == 1 %}badge-r{% elif r.priority == 2 %}badge-y{% else %}badge-g{% endif %}">
+            {% if r.priority == 1 %}High{% elif r.priority == 2 %}Medium{% else %}Low{% endif %} Priority
+          </span>
+        </div>
+        <div style="font-size:.75rem;color:var(--sage-dark);font-weight:500;margin-bottom:.5rem">{{ r.category_name }}</div>
+        <p>{{ r.body }}</p>
+        {% if r.resource_link %}<a href="{{ r.resource_link }}" target="_blank">📖 Read more →</a>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div id="rec-high" class="tab-pane" data-group="rec">
+      {% for r in recommendations %}{% if r.priority == 1 %}
+      <div class="rec-card" style="border-left-color:var(--rust)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem">
+          <h4>{{ r.title }}</h4><span class="badge badge-r">High Priority</span>
+        </div>
+        <div style="font-size:.75rem;color:var(--sage-dark);font-weight:500;margin-bottom:.5rem">{{ r.category_name }}</div>
+        <p>{{ r.body }}</p>
+        {% if r.resource_link %}<a href="{{ r.resource_link }}" target="_blank">📖 Read more →</a>{% endif %}
+      </div>{% endif %}{% endfor %}
+    </div>
+
+    <div id="rec-med" class="tab-pane" data-group="rec">
+      {% for r in recommendations %}{% if r.priority == 2 %}
+      <div class="rec-card" style="border-left-color:#f59e0b">
+        <h4 style="margin-bottom:.5rem">{{ r.title }}</h4>
+        <div style="font-size:.75rem;color:var(--sage-dark);font-weight:500;margin-bottom:.5rem">{{ r.category_name }}</div>
+        <p>{{ r.body }}</p>
+        {% if r.resource_link %}<a href="{{ r.resource_link }}" target="_blank">📖 Read more →</a>{% endif %}
+      </div>{% endif %}{% endfor %}
+    </div>
+
+  {% else %}
+  <div class="empty">
+    <div class="ico">💡</div>
+    <h3>No recommendations yet</h3>
+    <p>Personalised recommendations appear here after your counsellor completes a session and enters a diagnosis. Book your first session to get started.</p>
+    <a href="/book/" class="btn btn-p" style="margin-top:1.5rem">Book a Session →</a>
+  </div>{% endif %}
+</main></div>
+{% endblock %}

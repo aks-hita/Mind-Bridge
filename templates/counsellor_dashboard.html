@@ -1,0 +1,101 @@
+{% extends 'base.html' %}{% block title %}Counsellor Dashboard{% endblock %}
+{% block content %}
+<div class="dash-layout">
+<aside class="sidebar">
+  <div class="sb-user" style="margin-bottom:1.5rem">
+    <div style="width:50px;height:50px;border-radius:50%;background:rgba(122,158,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:.6rem">{{ user_name|first }}</div>
+    <div class="name">Dr. {{ user_name }}</div><div class="role">🩺 Counsellor</div>
+  </div>
+  <nav class="sb-nav">
+    <a href="/counsellor/dashboard/" class="active">📊 Dashboard</a>
+  </nav>
+  {% if stats.avg_rating %}
+  <div style="margin-top:1.5rem;padding:1rem;background:#fff;border-radius:12px;border:1px solid var(--sand);text-align:center">
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:.3rem">Average Rating</div>
+    <div style="font-size:1.8rem;font-family:'Fraunces',serif;color:var(--sage-dark)">{{ stats.avg_rating }} <span style="color:#f59e0b">★</span></div>
+  </div>{% endif %}
+  {% if diagnosis_breakdown %}
+  <div style="margin-top:1.5rem">
+    <div style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.8rem">Cases handled</div>
+    {% for d in diagnosis_breakdown %}
+    <div class="diag-bar">
+      <div style="width:80px;font-size:.8rem;color:var(--char)">{{ d.name }}</div>
+      <div class="bar" style="width:{{ d.count }}0px;max-width:80px"></div>
+      <div style="font-size:.8rem;color:var(--muted)">{{ d.count }}</div>
+    </div>{% endfor %}
+  </div>{% endif %}
+  {% if unread_count %}<div style="margin-top:1rem;padding:.8rem;background:rgba(194,92,58,.08);border-radius:10px;font-size:.82rem;color:var(--rust)">🔔 {{ unread_count }} new notification{{ unread_count|pluralize }}</div>{% endif %}
+  {% if notifications %}
+  <div style="margin-top:1rem">{% for n in notifications|slice:":4" %}
+  <div class="notif-item {% if not n.is_read %}unread{% endif %}">{{ n.message }}<div class="notif-time">{{ n.created_at }}</div></div>
+  {% endfor %}</div>{% endif %}
+</aside>
+<main class="main">
+  <div class="ph"><h1>Welcome, Dr. {{ user_name }} 🌿</h1><p>Your session management dashboard</p></div>
+
+  <div class="stats-row">
+    <div class="sbox"><div class="num">{{ today_apts|length }}</div><div class="lbl">Today's Sessions</div></div>
+    <div class="sbox"><div class="num">{{ stats.upcoming }}</div><div class="lbl">Upcoming</div></div>
+    <div class="sbox"><div class="num">{{ stats.completed }}</div><div class="lbl">Completed</div></div>
+    <div class="sbox"><div class="num">{{ stats.follow_ups_needed }}</div><div class="lbl">Follow-ups Needed</div></div>
+  </div>
+
+  {% if today_apts %}
+  <div style="margin-bottom:2rem">
+    <h2 style="font-size:1.3rem;margin-bottom:1rem">📅 Today's Sessions</h2>
+    <div class="apt-list">{% for a in today_apts %}
+    <div class="apt-card today">
+      <div class="apt-info">
+        <h4>{{ a.student_name }}</h4>
+        <div class="apt-meta"><span>🕐 {{ a.apt_time }}</span><span>{{ a.mode|capfirst }}</span><span>{{ a.department }}, Yr {{ a.year_of_study }}</span><span class="badge badge-g">Today</span></div>
+        {% if a.reason %}<div style="color:var(--muted);font-size:.8rem;margin-top:.3rem">Reason: {{ a.reason }}</div>{% endif %}
+      </div>
+      <div class="apt-actions">
+        <a href="/counsellor/appointment/{{ a.appointment_id }}/complete/" class="btn btn-p btn-sm">Complete Session</a>
+        <a href="/counsellor/appointment/{{ a.appointment_id }}/cancel/" class="btn btn-r btn-sm" onclick="return confirm('Cancel?')">Cancel</a>
+      </div>
+    </div>{% endfor %}</div>
+  </div>{% endif %}
+
+  <div class="tabs">
+    <button class="tab active" data-tab="c-upcoming" data-group="c">📅 Upcoming ({{ stats.upcoming }})</button>
+    <button class="tab" data-tab="c-all" data-group="c">📋 All Sessions</button>
+  </div>
+
+  <div id="c-upcoming" class="tab-pane active" data-group="c">
+    {% if upcoming %}<div class="apt-list">{% for a in upcoming %}
+    <div class="apt-card">
+      <div class="apt-info">
+        <h4>{{ a.student_name }}</h4>
+        <div class="apt-meta"><span>📅 {{ a.apt_date }}</span><span>🕐 {{ a.apt_time }}</span><span>{{ a.mode|capfirst }}</span><span>{{ a.department }}</span><span class="badge badge-g">Booked</span></div>
+        {% if a.reason %}<div style="color:var(--muted);font-size:.8rem;margin-top:.3rem">{{ a.reason }}</div>{% endif %}
+      </div>
+      <div class="apt-actions">
+        <a href="/counsellor/appointment/{{ a.appointment_id }}/complete/" class="btn btn-p btn-sm">Complete</a>
+        <a href="/counsellor/appointment/{{ a.appointment_id }}/cancel/" class="btn btn-r btn-sm" onclick="return confirm('Cancel?')">Cancel</a>
+      </div>
+    </div>{% endfor %}</div>
+    {% else %}<div class="empty"><div class="ico">📅</div><h3>No upcoming appointments</h3><p>New bookings will appear here.</p></div>{% endif %}
+  </div>
+
+  <div id="c-all" class="tab-pane" data-group="c">
+    <div class="apt-list">{% for a in all_sessions %}
+    <div class="apt-card">
+      <div class="apt-info">
+        <h4>{{ a.student_name }}</h4>
+        <div class="apt-meta">
+          <span>📅 {{ a.apt_date }}</span>
+          {% if a.diagnosis_name %}<span class="badge badge-b">{{ a.diagnosis_name }}</span>{% endif %}
+          {% if a.severity %}<span class="badge badge-y">{{ a.severity|capfirst }}</span>{% endif %}
+          {% if a.student_rating %}<span class="stars-display">{% for i in "12345" %}{% if forloop.counter <= a.student_rating %}★{% else %}☆{% endif %}{% endfor %}</span>{% endif %}
+          {% if a.follow_up_needed %}<span class="badge badge-r">Follow-up needed</span>{% endif %}
+          <span class="badge {% if a.status == 'completed' %}badge-b{% elif a.status == 'cancelled' %}badge-r{% else %}badge-g{% endif %}">{{ a.status|capfirst }}</span>
+        </div>
+      </div>
+      <div class="apt-actions"><a href="/counsellor/appointment/{{ a.appointment_id }}/" class="btn btn-o btn-sm">View</a></div>
+    </div>
+    {% empty %}<div class="empty"><div class="ico">📋</div><h3>No sessions yet</h3></div>
+    {% endfor %}</div>
+  </div>
+</main></div>
+{% endblock %}
