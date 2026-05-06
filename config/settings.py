@@ -2,12 +2,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'mindbridge-campus-secret-key-change-in-production'
 DEBUG = True
-import os
-
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
-
+ALLOWED_HOSTS = [
+    "web-production-0dc1.up.railway.app",
+    "*.up.railway.app",
+    "localhost",
+    "127.0.0.1",
+]
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}" for host in ALLOWED_HOSTS if host != "localhost"
+    "https://web-production-0dc1.up.railway.app",
+    "https://*.up.railway.app",  # covers any Railway subdomain
 ]
 INSTALLED_APPS = [
     
